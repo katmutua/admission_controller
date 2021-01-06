@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gandalf
+  namespace: default
+  labels:
+    name: gandalf
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: gandalf
+      labels:
+        name: gandalf
+    spec:
+      containers:
+        - name: webhook
+          image: djmutua/doxmt:latest
+          imagePullPolicy: Always
+          args:
+            - -alsologtostderr
+            - --log_dir=/
+            - -v=10
+            - 2>&1
+          resources:
+            limits:
+              memory: 50Mi
+              cpu: 300m
+            requests:
+              memory: 00Mi
+              cpu: 300m
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: /etc/certs
+              readOnly: true
+            - name: logs
+              mountPath: /tmp
+          securityContext:
+            readOnlyRootFilesystem: true
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: gandalf
+        - name: logs
+          emptyDir: {}

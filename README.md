@@ -68,9 +68,7 @@ Two types of admission controllers in Kubernetes
   - We need to create a secret to place the certificates. After we apply the manifest, the pod will be able to store the
   secret files into a directory.
 ```
-      kubectl create secret generic gandalf -n default \
-        --from-file=key.pem=certs/gandalf-key.pem \
-        --from-file=cert.pem=certs/gandalf-crt.pem
+  kubectl create secret generic gandalf -n default --from-file=key.pem=certs/gandalf-key.pem --from-file=cert.pem=certs/gandalf-crt.pem
 ```
 #### Deploying the Controller
   - we will use a deployment with a single replica which mounts the certs generated to expose a secure REST endpoint where the pod request will be submitted
@@ -86,7 +84,7 @@ Two types of admission controllers in Kubernetes
           spec:
             containers:
               - name: webhook
-                image: giantswarm/gandalf:1.0.0
+                image: djmutua/doxmt:latest
                 ...
                 volumeMounts:
                   - name: webhook-certs
@@ -138,3 +136,9 @@ We should get an error
 ```
 Error from server: error when creating "non-shire-app.yaml": admission webhook "gandalf-webhook" denied the request: Keep calm and don't add more crap to the cluster!
 ```
+
+
+#### Building local image
+
+docker build -t  <image_name> .
+docker tag
