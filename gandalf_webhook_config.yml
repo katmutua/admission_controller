@@ -1,0 +1,17 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidationWebhookConfiguration
+metadata:
+  name: gandalf
+webhooks:
+  - name: gandalf
+    clientConfig:
+      service:
+        name: gandalf
+        namespace: default
+        path: "/validate"
+        caBundle: "${CA_BUNDLE}"
+    rules:
+      - operations: ["CREATE"]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
