@@ -10,3 +10,8 @@ brew link minikube
 
 minikube start
 ```
+To confirm that you are pointing to the correct cluster run
+
+````
+  kubectl config get-contexts # this should point to minikube
+```
