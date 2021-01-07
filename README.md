@@ -16,7 +16,7 @@ Two types of admission controllers in Kubernetes
     creating `ValidatingWebhookConfiguration` or `MutatingWebhookConfiguration`.
   - a `ValidatingWebhookConfiguration` is used when you need to determine whether contents of an object are actually
     valid based on a certain defined policy/rules whereas a `MutatingWebhookConfiguration` will actually be used to
-    inject content into an object eg adding sidecar metadata to a pod.
+    inject content into an object eg adding sidecar metadata to a pod once created.
 
     GOAL: Create a simple validation controller which enabled us to influence the pod creation
     Controller name "gandalf" and will reject all new pods with a name different than "shire-pod"
@@ -50,7 +50,7 @@ Two types of admission controllers in Kubernetes
           - <resource>
         failurePolicy: <policy>  # Specifies how the policy should proceed if the webhook admission server is unavailable. Either Ignore (allow/fail open) or Fail (block/fail closed).
         `
-    ClientConfig,: defines where our service can be found (it can be an external URL)
+    ClientConfig: defines where our service can be found (it can be an external URL)
                   and the path which our validation server will listen on
                   Since security is always important, adding the cert authority will tell the Kubernetes API
                   to use HTTPS and validate our server using the passed asset.
