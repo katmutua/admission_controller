@@ -2,13 +2,12 @@
 
 - How to create an admission controller in Kubernetes
     - we can dynamically configure what resources are subject to what admission webhooks via
-      ValidatingWebhookConfiguration or MutatingWebhookConfiguration.
+      `ValidatingWebhookConfiguration` or `MutatingWebhookConfiguration`.
 
-Kubernetes API
- - based on REST model; gives possibility of managing all workloads using HTTP requests
+- Kubernetes API is based on REST model; gives possibility of managing all workloads using HTTP requests
 
 Two types of admission controllers in Kubernetes
-  - Validating admission controller :
+  - Validating admission controller:
     proxies the requests to the subscribed web hooks
     Kubernetes API registers the webhooks based on the resource type and the request method
 
@@ -27,36 +26,19 @@ Two types of admission controllers in Kubernetes
     Kubernetes philosophy advocates for using a declarative strategy.
 
     1. Define a ValidationWebhookConfiguration that gives the information needed to the API
-```
-       apiVersion: admissionregistration.k8s.io/v1beta1
-       kind: ValidationWebhookConfiguration
-       metadata:
-         name: gandalf
-      webhooks:
-        - name: gandalf
-          clientConfig:
-            service:
-            name: gandalf
-            namespace: default
-            path "/validate"
-          caBundle: "${CA_BUNDLE}"
-        rules:
-          - operations ["CREATE"]
-            apiGroups[""]
-            apiVersions: ["v1"]
-            resources: ["pods"]
-```
+
+     `< see the webhook config in the manifest >`
+
     clientConfig,: defines where our service can be found (it can be an external URL)
                   and the path which our validation server will listen on
                   Since security is always important, adding the cert authority will tell the Kubernetes API
                   to use HTTPS and validate our server using the passed asset.
 
-
    The second part specifies which rules the API will follow to decide if a request should be forwarded for validation
    or not
 
-    Here it is configured that only requests with method equal to CREATE and resource type pod will be
-    forwarded.
+   Here it is configured that only requests with method equal to CREATE and resource type pod will be
+   forwarded.
 
 #### Generating the certificates and the CA
   - run the generate_Ca.sh script to generate your certificates
@@ -70,41 +52,7 @@ Two types of admission controllers in Kubernetes
 ```
 #### Deploying the Controller
   - we will use a deployment with a single replica which mounts the certs generated to expose a secure REST endpoint where the pod request will be submitted
-```
-        apiVersion: apps/v1beta1
-      kind: Deployment
-      metadata:
-        name: gandalf
-        namespace: default
-      spec:
-        replicas: 1
-        template:
-          spec:
-            containers:
-              - name: webhook
-                image: djmutua/doxmt:latest
-                ...
-                volumeMounts:
-                  - name: webhook-certs
-                    mountPath: /etc/certs
-              ...
-            volumes:
-              - name: webhook-certs
-                secret:
-                  secretName: gandalf
-      ---
-      apiVersion: v1
-      kind: Service
-      metadata:
-        name: gandalf
-        namespace: default
-      spec:
-        ports:
-        - name: webhook
-          port: 443
-          targetPort: 8080
-          ...
-```
+      `< see the deployment config in the manifest >`
 
 apply the manifest
 
@@ -114,16 +62,7 @@ Now the server should be running and ready to validate the creation of new pods.
 
 #### Verify that the validation controller works
 Let's try creating a pod with a non matching name
-```
-apiVersion: v1
-kind: Pod
-metadata:
-  name: non-shire-app
-spec:
-  containers:
-  - image: busybox
-    name: non-shire-app
-```
+ `< see invalid config in invalid pod config >'
 
 ```
 $ kubectl apply -f non-shire-app.yaml
