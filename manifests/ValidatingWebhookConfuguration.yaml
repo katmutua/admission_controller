@@ -26,7 +26,8 @@ webhooks:
         name: admissions-webhook
         namespace: admissions
         path:  "/api/v1/validate/pod/readiness"
-      caBundle: "${CA}"
+      caBundle: "${CA_BUNDLE}"
+
   - name: template-pod-readiness.isaaguilar.local
     namespaceSelector:
       matchExpressions:
@@ -57,7 +58,8 @@ webhooks:
         name: admissions-webhook
         namespace: admissions
         path:  "/api/v1/validate/podtemplate/pod-readiness"
-      caBundle: "${CA}"
+      caBundle: "${CA_BUNDLE}"
+
 ---
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: ValidatingWebhookConfiguration
@@ -81,4 +83,4 @@ webhooks:
         name: admissions-webhook
         namespace: admissions
         path:  "/api/v1/validate/namespace/labels"
-      caBundle: "${CA}"
+      caBundle: "${CA_BUNDLE}"
