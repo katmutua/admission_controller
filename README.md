@@ -1,11 +1,6 @@
 # admission_controller
 
 - How to create an admission controller in Kubernetes
-    - we can dynamically configure what resources are subject to what admission webhooks via
-      `ValidatingWebhookConfiguration` or `MutatingWebhookConfiguration`.
-
-- Kubernetes API is based on REST model; gives possibility of managing all workloads using HTTP requests
-
 Two types of admission controllers in Kubernetes
   - Validating admission controller:
     proxies the requests to the subscribed web hooks
@@ -14,8 +9,14 @@ Two types of admission controllers in Kubernetes
     In case the validation webhook rejects the request, the Kubernetes API  returns a failed HTTP
     response to the user  otherwise continues to the next admission.
 
-  - Mutating admission controller
+  - Mutating Admissions controller
     Modifies the resource submitted by the user so that you can create defaults or validate the schema
+
+  - we can dynamically configure what resources are subject to what admission webhooks via
+    creating `ValidatingWebhookConfiguration` or `MutatingWebhookConfiguration`.
+  - a `ValidatingWebhookConfiguration` is used when you need to determine whether contents of an object are actually
+    valid based on a certain defined policy/rules whereas a `MutatingWebhookConfiguration` will actually be used to
+    inject content into an object eg adding sidecar metadata to a pod.
 
     GOAL: Create a simple validation controller which enabled us to influence the pod creation
     Controller name "gandalf" and will reject all new pods with a name different than "shire-pod"
@@ -23,10 +24,9 @@ Two types of admission controllers in Kubernetes
 #### Needed:
 
    The Kubernetes server needs to know when to send an incoming request to our admissions controller
-    Kubernetes philosophy advocates for using a declarative strategy.
+   The Kubernetes philosophy advocates for using a declarative strategy.
 
     1. Define a ValidationWebhookConfiguration that gives the information needed to the API
-
      `apiVersion: admissionregistration.k8s.io/v1beta1
       kind: ValidatingWebhookConfiguration  # The name for the webhook admission object.
       metadata:
@@ -50,7 +50,7 @@ Two types of admission controllers in Kubernetes
           - <resource>
         failurePolicy: <policy>  # Specifies how the policy should proceed if the webhook admission server is unavailable. Either Ignore (allow/fail open) or Fail (block/fail closed).
         `
-    clientConfig,: defines where our service can be found (it can be an external URL)
+    ClientConfig,: defines where our service can be found (it can be an external URL)
                   and the path which our validation server will listen on
                   Since security is always important, adding the cert authority will tell the Kubernetes API
                   to use HTTPS and validate our server using the passed asset.
@@ -58,11 +58,11 @@ Two types of admission controllers in Kubernetes
    The second part specifies which rules the API will follow to decide if a request should be forwarded for validation
    or not
 
-   Here it is configured that only requests with method equal to CREATE and resource type pod will be
+   Here it is configured that only requests with the methods equal to CREATE UPDATE and resource type pod will be
    forwarded.
 
 #### Generating the certificates and the CA
-  - run the generate_Ca.sh script to generate your certificates
+  - run the generate_ca.sh script to generate your certificates
   Besides creating the certificates and the CA, the script later injects it into the manifest used to deploy our server.
       cat manifest.yaml | grep caBundle
 

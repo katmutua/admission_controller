@@ -77,7 +77,7 @@ webhooks:
         path: "/validate"
       caBundle: "${CA_BUNDLE}"
     rules:
-      - operations: ["CREATE","UPDATE"]
+      - operations: ["CREATE","UPDATE", "CONNECT"]
         apiGroups: [""]
         apiVersions: ["v1"]
         resources: ["pods"]
