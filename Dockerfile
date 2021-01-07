@@ -33,4 +33,3 @@ RUN apk add --update \
     vim \
     wget
 ENV ENV "/root/$BASHRC_FILE"
-ENTRYPOINT ["bash","entrypoint.prod.sh"]

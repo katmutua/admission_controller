@@ -27,8 +27,29 @@ Two types of admission controllers in Kubernetes
 
     1. Define a ValidationWebhookConfiguration that gives the information needed to the API
 
-     `< see the webhook config in the manifest >`
-
+     `apiVersion: admissionregistration.k8s.io/v1beta1
+      kind: ValidatingWebhookConfiguration  # The name for the webhook admission object.
+      metadata:
+        name: <controller_name>  # The name for the webhook admission object.
+      webhooks:
+      - name: <webhook_name> # The name of the webhook to call.
+        clientConfig: #  Information about how to connect to, trust, and send data to the webhook server.
+          service:
+            namespace: default  #  The project where the front-end service is created.
+            name: kubernetes #  The name of the front-end service.
+           path: <webhook_url> #  The webhook URL used for admission requests.
+          caBundle: <cert> #  A PEM-encoded CA certificate that signs the server certificate used by the webhook server.
+        rules: #  Rules that define when the API server should use this controller.
+        - operations:
+          - <operation>
+          apiGroups:
+          - ""
+          apiVersions:
+          - "*"
+          resources:
+          - <resource>
+        failurePolicy: <policy>  # Specifies how the policy should proceed if the webhook admission server is unavailable. Either Ignore (allow/fail open) or Fail (block/fail closed).
+        `
     clientConfig,: defines where our service can be found (it can be an external URL)
                   and the path which our validation server will listen on
                   Since security is always important, adding the cert authority will tell the Kubernetes API
@@ -62,7 +83,7 @@ Now the server should be running and ready to validate the creation of new pods.
 
 #### Verify that the validation controller works
 Let's try creating a pod with a non matching name
- `< see invalid config in invalid pod config >'
+ `< see invalid config in invalid pod config >`
 
 ```
 $ kubectl apply -f non-shire-app.yaml
@@ -70,9 +91,11 @@ $ kubectl apply -f non-shire-app.yaml
 We should get an error
 
 ```
-Error from server: error when creating "non-shire-app.yaml": admission webhook "gandalf-webhook" denied the request: Keep calm and don't add more crap to the cluster!
+  Error from server: error when creating "non-shire-app.yaml": admission webhook "gandalf-webhook" denied the request: Keep calm and don't add more crap to the cluster!
 ```
 
 #### Building local image
-docker build -t  <image_name> .
-docker tag
+
+`docker build -t  <image_name> .
+  docker tag
+`
