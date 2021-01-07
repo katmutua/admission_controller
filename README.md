@@ -1,11 +1,9 @@
 # admission_controller
 
 - How to create an admission controller in Kubernetes
-Two types of admission controllers in Kubernetes
-  - Validating admission controller:
-    proxies the requests to the subscribed web hooks
-    Kubernetes API registers the webhooks based on the resource type and the request method
 
+Two types of admission controllers
+  - Validating admission controller:
     In case the validation webhook rejects the request, the Kubernetes API  returns a failed HTTP
     response to the user  otherwise continues to the next admission.
 
@@ -14,9 +12,9 @@ Two types of admission controllers in Kubernetes
 
   - we can dynamically configure what resources are subject to what admission webhooks via
     creating `ValidatingWebhookConfiguration` or `MutatingWebhookConfiguration`.
-  - a `ValidatingWebhookConfiguration` is used when you need to determine whether contents of an object are actually
-    valid based on a certain defined policy/rules whereas a `MutatingWebhookConfiguration` will actually be used to
-    inject content into an object eg adding sidecar metadata to a pod once created.
+  - a `ValidatingWebhookConfiguration` is used when you need to determine whether contents of a Kubernetes object are actually
+    valid based on certain defined policy/rules whereas a `MutatingWebhookConfiguration` will actually be used to
+    inject content into an object e.g. adding sidecar metadata to a pod once created.
 
     GOAL: Create a simple validation controller which enabled us to influence the pod creation
     Controller name "gandalf" and will reject all new pods with a name different than "shire-pod"
@@ -26,6 +24,7 @@ Two types of admission controllers in Kubernetes
    The Kubernetes server needs to know when to send an incoming request to our admissions controller
    The Kubernetes philosophy advocates for using a declarative strategy.
 
+ ### STEPS
     1. Define a ValidationWebhookConfiguration that gives the information needed to the API
      `apiVersion: admissionregistration.k8s.io/v1beta1
       kind: ValidatingWebhookConfiguration  # The name for the webhook admission object.
