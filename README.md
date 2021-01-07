@@ -1,10 +1,11 @@
 # admission_controller
 
 - How to create an admission controller in Kubernetes
+    - we can dynamically configure what resources are subject to what admission webhooks via
+      ValidatingWebhookConfiguration or MutatingWebhookConfiguration.
 
 Kubernetes API
  - based on REST model; gives possibility of managing all workloads using HTTP requests
-
 
 Two types of admission controllers in Kubernetes
   - Validating admission controller :
@@ -14,19 +15,16 @@ Two types of admission controllers in Kubernetes
     In case the validation webhook rejects the request, the Kubernetes API  returns a failed HTTP
     response to the user  otherwise continues to the next admission.
 
-
   - Mutating admission controller
     Modifies the resource submitted by the user so that you can create defaults or validate the schema
 
-
-    GOAL: Create a simple validation controller which enabld us to influence the pod creation
+    GOAL: Create a simple validation controller which enabled us to influence the pod creation
     Controller name "gandalf" and will reject all new pods with a name different than "shire-pod"
-
 
 #### Needed:
 
-    The Kubernetes server needs to know when to send an incoming request to our admissions controller
-    Kubernetes philosophy advocates deo using a declarative strategy.
+   The Kubernetes server needs to know when to send an incoming request to our admissions controller
+    Kubernetes philosophy advocates for using a declarative strategy.
 
     1. Define a ValidationWebhookConfiguration that gives the information needed to the API
 ```
@@ -114,7 +112,6 @@ apply the manifest
 ```
 Now the server should be running and ready to validate the creation of new pods.
 
-
 #### Verify that the validation controller works
 Let's try creating a pod with a non matching name
 ```
@@ -137,8 +134,6 @@ We should get an error
 Error from server: error when creating "non-shire-app.yaml": admission webhook "gandalf-webhook" denied the request: Keep calm and don't add more crap to the cluster!
 ```
 
-
 #### Building local image
-
 docker build -t  <image_name> .
 docker tag
