@@ -1,0 +1,50 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: namespacereservations.admission.online.openshift.io
+webhooks:
+- name: namespacereservations.admission.online.openshift.io
+  clientConfig:
+    service:
+      namespace: default
+      name: webhooks
+     path: /apis/admission.online.openshift.io/v1beta1/namespacereservations
+    caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUQ4akNDQXRvQ0NRQ2Zsd1NWbVFqczBEQU5CZ2txaGtpRzl3MEJBUTBGQURDQnVqRUxNQWtHQTFVRUJoTUMKUTBFeEVEQU9CZ05WQkFnTUIxUnZjbTl1ZEc4eEVEQU9CZ05WQkFjTUIxUnZjbTl1ZEc4eEVEQU9CZ05WQkJFTQpCMDAwUXlBNVF6UXhGekFWQmdOVkJBa01Ea1poYTJWVGRISmxaWFFnTVRJek1SQXdEZ1lEVlFRS0RBZG1ZV3RsCmIzSm5NUmN3RlFZRFZRUUxEQTVHWVd0bFJHVndZWEowYldWdWRERVNNQkFHQTFVRUF3d0phbTExZEhWaExtbHYKTVIwd0d3WUpLb1pJaHZjTkFRa0JGZzVtWVd0bFgyVnRZV2xzTG1OdmJUQWVGdzB5TVRBeE1EY3hOakExTXpGYQpGdzB5TVRBeU1EWXhOakExTXpGYU1JRzZNUXN3Q1FZRFZRUUdFd0pEUVRFUU1BNEdBMVVFQ0F3SFZHOXliMjUwCmJ6RVFNQTRHQTFVRUJ3d0hWRzl5YjI1MGJ6RVFNQTRHQTFVRUVRd0hUVFJESURsRE5ERVhNQlVHQTFVRUNRd08KUm1GclpWTjBjbVZsZENBeE1qTXhFREFPQmdOVkJBb01CMlpoYTJWdmNtY3hGekFWQmdOVkJBc01Ea1poYTJWRQpaWEJoY25SdFpXNTBNUkl3RUFZRFZRUUREQWxxYlhWMGRXRXVhVzh4SFRBYkJna3Foa2lHOXcwQkNRRVdEbVpoCmEyVmZaVzFoYVd3dVkyOXRNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQTd4OVIKWXpmWlBLRXJScUQrOFdzM0VaWGYwUUQ3N0kvUTZxVWNGSzFTSU5WMjJQYTdBa1EzbVVqR2dFaFJzUEhKVnFwdQpDNEVGclltdjhsenhLamJXQUxoTjI1cW1YZTVDNjZ3Y3RKaDcvZXdXN3V4Z1Z3YkJRUEpUcnJkN25KWkdmNlpHClJwWkhXS09ZTTBnRWJRejVZTUtxekdMaVdWZ1JmY1EwdDhpMCswQmFjMHZCbHAya3lsMjlXQ1c4T2F1UlFEanYKY2NMaDJhcFJiVnhhWnhsK2tvVU5lWndhSlE5RE0vS2taVU41b1ArRStDNUs1RU9RdEUvMlE0dGJucEtJMVQ4awpRWktMVGRwN2hhK0hxYzFJZFViU2ZMSnF6bWZXRmFXNHFWRVQwSW1tYnNBY2haVVo4UXR4SlVXdXZ4UCtLOWhMCkdqUm5NRTRDdFIvYjFaZ1A1d0lEQVFBQk1BMEdDU3FHU0liM0RRRUJEUVVBQTRJQkFRQm1ySS9hdUppRGc1NXYKR0ZTRkNxekdYVzFCV2tWcEUwby9sZXFJejlKSlFLRXREK1JGanBqNlZrODYvRnpiZE5uQ0pGNE90K2xiMklnbQpYQWI4SzZUL1FLRzFXb3E3SlBSdzZRaGtPbmZFOHNtcld6YnFVRndmWUMraGxoRlBCcms0OVpSQnZnNk1tTDNaCkYrRWloclQ0SDBOZUZ1WkNGbnkyRHUveENyTnpkeUVVR25RRmVWM3cxK2ZiZkVZMzRmcnRNNGpHNU1uUmZsNmMKdXNveDcrcDI3YVJvZWRlMER4TFRQZ3Q5blRwbW5IZDhoSW94cSttaGROQXVkajFkc2V4NXRKNEdwZ29mcTE2eQpkMTZvZk9tNXYrb0p2TStwMHlwTUgzRjNVNnBSRExhcUFGZTloYm1VMnZqblZQSzd2bldLcUZRUEVpUmxXV2swCkVDL09JSXh5Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+  rules:
+  - operations:
+    - CREATE
+    apiGroups:
+    - ""
+    apiVersions:
+    - "b1"
+    resources:
+    - namespaces
+  failurePolicy: Ignore
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    role: webhook
+  name: webhook
+spec:
+  ports:
+    - port: 443
+      targetPort: 8000
+  selector:
+role: webhook
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    role: webhook
+  name: webhook
+spec:
+  containers:
+    - name: webhook
+      image: djmutua/doxmt:latest
+      imagePullPolicy: IfNotPresent
+      ports:
+- containerPort: 8000

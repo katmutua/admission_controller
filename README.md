@@ -24,7 +24,7 @@ Two types of admission controllers
    The Kubernetes server needs to know when to send an incoming request to our admissions controller
    The Kubernetes philosophy advocates for using a declarative strategy.
 
- ### STEPS
+######STEPS
     1. Define a ValidationWebhookConfiguration that gives the information needed to the API
      `apiVersion: admissionregistration.k8s.io/v1beta1
       kind: ValidatingWebhookConfiguration  # The name for the webhook admission object.
