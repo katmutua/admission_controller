@@ -1,0 +1,21 @@
+{
+    "hosts": [
+        "admissions-webhook.admissions.svc",
+        "admissions-webhook.admissions.svc:443",
+        "127.0.0.1",
+        "127.0.0.1:443"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C":  "US",
+            "L":  "California",
+            "O":  "IsaAguilar",
+            "OU": "WWW",
+            "ST": "San Diego"
+        }
+    ]
+}

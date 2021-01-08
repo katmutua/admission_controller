@@ -1,0 +1,83 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gandalf
+  namespace: default
+  labels:
+    name: gandalf
+spec:
+  ports:
+  - name: webhook
+    port: 443
+    targetPort: 8080
+  selector:
+    name: gandalf
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gandalf
+  namespace: default
+  labels:
+    name: gandalf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: gandalf
+  template:
+    metadata:
+      name: gandalf
+      labels:
+        name: gandalf
+    spec:
+      containers:
+        - name: webhook
+          image: djmutua/doxmt:latest
+          imagePullPolicy: Always
+          args:
+            - -alsologtostderr
+            - --log_dir=/
+            - -v=10
+            - 2>&1
+          resources:
+            limits:
+              memory: 50Mi
+              cpu: 300m
+            requests:
+              memory: 00Mi
+              cpu: 300m
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: /etc/certs
+              readOnly: true
+            - name: logs
+              mountPath: /tmp
+          securityContext:
+            readOnlyRootFilesystem: true
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: gandalf
+        - name: logs
+          emptyDir: {}
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: gandalf
+webhooks:
+  - name:  < valid webhook url >
+    clientConfig:
+      service:
+        name: gandalf
+        namespace: default
+        path: "/validate"
+      caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUQ4akNDQXRvQ0NRQ2Zsd1NWbVFqczBEQU5CZ2txaGtpRzl3MEJBUTBGQURDQnVqRUxNQWtHQTFVRUJoTUMKUTBFeEVEQU9CZ05WQkFnTUIxUnZjbTl1ZEc4eEVEQU9CZ05WQkFjTUIxUnZjbTl1ZEc4eEVEQU9CZ05WQkJFTQpCMDAwUXlBNVF6UXhGekFWQmdOVkJBa01Ea1poYTJWVGRISmxaWFFnTVRJek1SQXdEZ1lEVlFRS0RBZG1ZV3RsCmIzSm5NUmN3RlFZRFZRUUxEQTVHWVd0bFJHVndZWEowYldWdWRERVNNQkFHQTFVRUF3d0phbTExZEhWaExtbHYKTVIwd0d3WUpLb1pJaHZjTkFRa0JGZzVtWVd0bFgyVnRZV2xzTG1OdmJUQWVGdzB5TVRBeE1EY3hOakExTXpGYQpGdzB5TVRBeU1EWXhOakExTXpGYU1JRzZNUXN3Q1FZRFZRUUdFd0pEUVRFUU1BNEdBMVVFQ0F3SFZHOXliMjUwCmJ6RVFNQTRHQTFVRUJ3d0hWRzl5YjI1MGJ6RVFNQTRHQTFVRUVRd0hUVFJESURsRE5ERVhNQlVHQTFVRUNRd08KUm1GclpWTjBjbVZsZENBeE1qTXhFREFPQmdOVkJBb01CMlpoYTJWdmNtY3hGekFWQmdOVkJBc01Ea1poYTJWRQpaWEJoY25SdFpXNTBNUkl3RUFZRFZRUUREQWxxYlhWMGRXRXVhVzh4SFRBYkJna3Foa2lHOXcwQkNRRVdEbVpoCmEyVmZaVzFoYVd3dVkyOXRNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQTd4OVIKWXpmWlBLRXJScUQrOFdzM0VaWGYwUUQ3N0kvUTZxVWNGSzFTSU5WMjJQYTdBa1EzbVVqR2dFaFJzUEhKVnFwdQpDNEVGclltdjhsenhLamJXQUxoTjI1cW1YZTVDNjZ3Y3RKaDcvZXdXN3V4Z1Z3YkJRUEpUcnJkN25KWkdmNlpHClJwWkhXS09ZTTBnRWJRejVZTUtxekdMaVdWZ1JmY1EwdDhpMCswQmFjMHZCbHAya3lsMjlXQ1c4T2F1UlFEanYKY2NMaDJhcFJiVnhhWnhsK2tvVU5lWndhSlE5RE0vS2taVU41b1ArRStDNUs1RU9RdEUvMlE0dGJucEtJMVQ4awpRWktMVGRwN2hhK0hxYzFJZFViU2ZMSnF6bWZXRmFXNHFWRVQwSW1tYnNBY2haVVo4UXR4SlVXdXZ4UCtLOWhMCkdqUm5NRTRDdFIvYjFaZ1A1d0lEQVFBQk1BMEdDU3FHU0liM0RRRUJEUVVBQTRJQkFRQm1ySS9hdUppRGc1NXYKR0ZTRkNxekdYVzFCV2tWcEUwby9sZXFJejlKSlFLRXREK1JGanBqNlZrODYvRnpiZE5uQ0pGNE90K2xiMklnbQpYQWI4SzZUL1FLRzFXb3E3SlBSdzZRaGtPbmZFOHNtcld6YnFVRndmWUMraGxoRlBCcms0OVpSQnZnNk1tTDNaCkYrRWloclQ0SDBOZUZ1WkNGbnkyRHUveENyTnpkeUVVR25RRmVWM3cxK2ZiZkVZMzRmcnRNNGpHNU1uUmZsNmMKdXNveDcrcDI3YVJvZWRlMER4TFRQZ3Q5blRwbW5IZDhoSW94cSttaGROQXVkajFkc2V4NXRKNEdwZ29mcTE2eQpkMTZvZk9tNXYrb0p2TStwMHlwTUgzRjNVNnBSRExhcUFGZTloYm1VMnZqblZQSzd2bldLcUZRUEVpUmxXV2swCkVDL09JSXh5Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+    rules:
+      - operations: ["CREATE","UPDATE", "CONNECT"]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+    failurePolicy: Ignore

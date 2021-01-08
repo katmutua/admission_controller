@@ -1,0 +1,16 @@
+{
+  "CN": "Admissions Webhook CA",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C":  "US",
+            "L":  "California",
+            "O":  "IsaAguilar",
+            "OU": "WWW",
+            "ST": "San Diego"
+        }
+    ]
+}
