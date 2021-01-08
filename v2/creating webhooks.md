@@ -84,3 +84,104 @@ Types of admission webhook
         # Specifies how the policy should proceed if the webhook admission server is unavailable.
         # Either Ignore (allow/fail open) or Fail (block/fail closed).
   ```
+
+### Creating the Admission Webhook
+
+- First deploy the external webhook server and ensure that it is working properly.
+  [ try create a local server with go and run the code with the validate endpoint ]
+
+- Configure a mutating or a validating admission webhook object in a YAML file
+
+- Create a front-end service for the admission webhook
+  ```
+  apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      role: webhook #Free-form label to trigger the webhook
+    name: <name>
+  spec:
+    selector:
+     role: webhook # 	Free-form label to trigger the webhook.
+  ```
+- Apply the manifest
+   - You can add the components in one manifest file and apply as follows
+       ```
+       kubectl apply -f manifest.yaml  
+       ```
+- Add the admission webhook name to pods you want to be controlled by the webhook
+  Add the name of the webhook to the pod spec
+  ```
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    labels:
+      role: webhook
+    name: <name>
+  spec:
+    containers:
+      - name: <name>
+        image: myrepo/myimage:latest
+        imagePullPolicy: <policy>
+        ports:
+         - containerPort: 8000
+  ```
+
+##### Admission Webhook Example
+```
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: namespacereservations.admission.online.openshift.io
+webhooks:
+- name: namespacereservations.admission.online.openshift.io
+  clientConfig:
+    service:
+      namespace: default
+      name: webhooks
+     path: /apis/admission.online.openshift.io/v1beta1/namespacereservations
+    caBundle: KUBE_CA_HERE
+  rules:
+  - operations:
+    - CREATE
+    apiGroups:
+    - ""
+    apiVersions:
+    - "b1"
+    resources:
+    - namespaces
+  failurePolicy: Ignore
+```
+The following is an example pod that will be evaluated by the admission webhook named webhook:
+  ```
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    labels:
+      role: webhook
+    name: webhook
+  spec:
+    containers:
+      - name: webhook
+        image: myrepo/myimage:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+  - containerPort: 8000
+  ```
+
+  The following is the front-end service for the webhook:
+
+  ```
+  apiVersion: v1
+  kind: Service
+  metadata:
+   labels:
+     role: webhook
+   name: webhook
+  spec:
+   ports:
+     - port: 443
+       targetPort: 8000
+   selector:
+  role: webhook
+  ```
