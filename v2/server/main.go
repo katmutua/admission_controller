@@ -10,6 +10,7 @@ import(
 func processRequests(w http.ResponseWriter, r *http.Request){
     curr_url := html.EscapeString(r.URL.Path)
     fmt.Println(curr_url)
+
     switch curr_url {
     case "/":
       fmt.Fprintf(w, "Welcome to the HomePage!")
