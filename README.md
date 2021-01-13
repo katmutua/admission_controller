@@ -76,7 +76,8 @@ Two types of admission controllers
 
 apply the manifest
 
-``` kubectl apply -f manifest.yaml
+``` 
+kubectl apply -f manifest.yaml
 ```
 Now the server should be running and ready to validate the creation of new pods.
 
