@@ -12,6 +12,7 @@ Two types of admission controllers
 
   - we can dynamically configure what resources are subject to what admission webhooks via
     creating `ValidatingWebhookConfiguration` or `MutatingWebhookConfiguration`.
+    
   - a `ValidatingWebhookConfiguration` is used when you need to determine whether contents of a Kubernetes object are actually
     valid based on certain defined policy/rules whereas a `MutatingWebhookConfiguration` will actually be used to
     inject content into an object e.g. adding sidecar metadata to a pod once created.
@@ -24,7 +25,8 @@ Two types of admission controllers
    The Kubernetes server needs to know when to send an incoming request to our admissions controller
    The Kubernetes philosophy advocates for using a declarative strategy.
 
-######STEPS
+#### STEPS
+
     1. Define a ValidationWebhookConfiguration that gives the information needed to the API
      `apiVersion: admissionregistration.k8s.io/v1beta1
       kind: ValidatingWebhookConfiguration  # The name for the webhook admission object.
@@ -63,8 +65,9 @@ Two types of admission controllers
 #### Generating the certificates and the CA
   - run the generate_ca.sh script to generate your certificates
   Besides creating the certificates and the CA, the script later injects it into the manifest used to deploy our server.
-      cat manifest.yaml | grep caBundle
-
+  ```  
+  cat manifest.yaml | grep caBundle
+  ```
   - We need to create a secret to place the certificates. After we apply the manifest, the pod will be able to store the
   secret files into a directory.
 ```
