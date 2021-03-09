@@ -1,6 +1,6 @@
 # admission_controller
 
-This repo covers how to create an admission controller in Kubernetes
+This repo covers how to create an admission controller in Kubernetes for test purposes 
 
 Two types of admission controllers
   - Validating admission controller:
